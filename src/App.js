@@ -1,23 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from 'react';
+import axios from 'axios';
 
 function App() {
+  const [question, setQuestion] = useState('');
+  const [reply, setReply] = useState('');
+
+  const handleAsk = async () => {
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/ask`, {
+        question: question,
+        language: 'EN', // or any language code like 'FR', 'ES', 'AR'
+      });
+      setReply(res.data.reply);
+    } catch (err) {
+      console.error(err);
+      setReply('Error connecting to backend');
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <h1>Ask StudyBloom</h1>
+      <input
+        type="text"
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+        placeholder="Ask something..."
+      />
+      <button onClick={handleAsk}>Ask</button>
+      <p>{reply}</p>
     </div>
   );
 }
